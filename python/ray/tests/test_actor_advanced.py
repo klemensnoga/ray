@@ -1400,6 +1400,33 @@ def test_get_actor_in_remote_workers(ray_start_cluster):
     assert (1, 2) == ray.get(submit_named_actors.remote())
 
 
+def test_execute_out_of_order(shutdown_only):
+    ray.init()
+
+    @ray.remote
+    class A:
+        def echo(self, inp):
+            print(inp)
+            return inp
+
+    @ray.remote
+    def never_return():
+        import time
+        time.sleep(10000)
+
+    inp_ref_1 = never_return.remote()
+    inp_ref_2 = ray.put(2)
+
+    assert ray.get(inp_ref_2) == 2
+
+    a = A.options(max_concurrency=2, execute_out_of_order=True).remote()
+
+    a.echo.remote(inp_ref_1)
+    out_ref_2 = a.echo.remote(inp_ref_2)
+
+    assert ray.get(out_ref_2, timeout=5) == 2
+
+
 if __name__ == "__main__":
     import pytest
     # Test suite is timing out. Disable on windows for now.

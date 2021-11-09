@@ -468,7 +468,8 @@ class ActorClass:
                 placement_group="default",
                 placement_group_bundle_index=-1,
                 placement_group_capture_child_tasks=None,
-                runtime_env=None):
+                runtime_env=None,
+                execute_out_of_order=False):
         """Configures and overrides the actor instantiation parameters.
 
         The arguments are the same as those that can be passed
@@ -521,7 +522,8 @@ class ActorClass:
                     placement_group_bundle_index=placement_group_bundle_index,
                     placement_group_capture_child_tasks=(
                         placement_group_capture_child_tasks),
-                    runtime_env=new_runtime_env)
+                    runtime_env=new_runtime_env,
+                    execute_out_of_order=execute_out_of_order)
 
         return ActorOptionWrapper()
 
@@ -544,7 +546,8 @@ class ActorClass:
                 placement_group="default",
                 placement_group_bundle_index=-1,
                 placement_group_capture_child_tasks=None,
-                runtime_env=None):
+                runtime_env=None,
+                execute_out_of_order=False):
         """Create an actor.
 
         This method allows more flexibility than the remote method because
@@ -590,6 +593,8 @@ class ActorClass:
                 this actor or task and its children (see
                 :ref:`runtime-environments` for details).  This API is in beta
                 and may change before becoming stable.
+            execute_out_of_order (bool): Allow the actor to execute tasks out
+                of order.
 
         Returns:
             A handle to the newly created actor.
@@ -635,7 +640,8 @@ class ActorClass:
                 placement_group_bundle_index=placement_group_bundle_index,
                 placement_group_capture_child_tasks=(
                     placement_group_capture_child_tasks),
-                runtime_env=runtime_env)
+                runtime_env=runtime_env,
+                execute_out_of_order=execute_out_of_order)
 
         worker = ray.worker.global_worker
         worker.check_connected()
@@ -796,7 +802,8 @@ class ActorClass:
             extension_data=str(actor_method_cpu),
             serialized_runtime_env=parsed_runtime_env.serialize(),
             runtime_env_uris=parsed_runtime_env.get_uris(),
-            concurrency_groups_dict=concurrency_groups_dict or dict())
+            concurrency_groups_dict=concurrency_groups_dict or dict(),
+            execute_out_of_order=execute_out_of_order)
 
         actor_handle = ActorHandle(
             meta.language,
