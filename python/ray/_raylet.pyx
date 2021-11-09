@@ -1485,6 +1485,7 @@ cdef class CoreWorker:
                      c_string serialized_runtime_env,
                      runtime_env_uris,
                      concurrency_groups_dict,
+                     c_bool execute_out_of_order,
                      ):
         cdef:
             CRayFunction ray_function
@@ -1523,7 +1524,8 @@ cdef class CoreWorker:
                         placement_group_capture_child_tasks,
                         serialized_runtime_env,
                         c_runtime_env_uris,
-                        c_concurrency_groups),
+                        c_concurrency_groups,
+                        execute_out_of_order),
                     extension_data,
                     &c_actor_id))
 
